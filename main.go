@@ -11,7 +11,7 @@ import (
 	"gitlab.com/home-server7795544/home-server/iam/iam-backend/api"
 	"gitlab.com/home-server7795544/home-server/iam/iam-backend/config"
 	"gitlab.com/home-server7795544/home-server/iam/iam-backend/grpc_server"
-	"gitlab.com/home-server7795544/home-server/iam/iam-backend/internal/sftp"
+	"runtime"
 
 	"gitlab.com/home-server7795544/home-server/iam/iam-backend/handler/auth"
 	"gitlab.com/home-server7795544/home-server/iam/iam-backend/internal/db"
@@ -73,18 +73,18 @@ func main() {
 	//}()
 	//logger.Info("Redis Connected")
 
-	configSftp := sftp.Config{
-		Username: "",
-		Password: "",
-		Server:   "host:port",
-		Timeout:  time.Second * 30,
-	}
-
-	client, err := sftp.New(configSftp)
-	if err != nil {
-		logger.Fatal("server connect to sftp", zap.Error(err))
-	}
-	defer client.Close()
+	//configSftp := sftp.Config{
+	//	Username: "",
+	//	Password: "",
+	//	Server:   "host:port",
+	//	Timeout:  time.Second * 30,
+	//}
+	//
+	//client, err := sftp.New(configSftp)
+	//if err != nil {
+	//	logger.Fatal("server connect to sftp", zap.Error(err))
+	//}
+	//defer client.Close()
 
 	jwtSecret := "super-secret-key" // Replace with a secure secret
 	accessTokenDuration := 30 * time.Minute
@@ -95,6 +95,7 @@ func main() {
 	group.Get("/health", func(c *fiber.Ctx) error {
 		return api.Ok(c, versionDeploy)
 	})
+	group.Get("/metric", metrics())
 	logger.Info(fmt.Sprintf("/%s/api/v1", cfg.Server.Name), zap.Any("port", cfg.Server.Port))
 	//logger.Debug("route", zap.Any("", app.GetRoutes(true)))
 	go grpc_server.StartGRPCServer(dbPool, jwtSecret, accessTokenDuration, refreshTokenDuration)
@@ -134,4 +135,40 @@ func SetHeaderID() fiber.Handler {
 		c.Request().Header.Set("traceId", traceId)
 		return c.Next()
 	}
+}
+
+func metrics() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		var mem runtime.MemStats
+		runtime.ReadMemStats(&mem)
+
+		return api.Ok(c, map[string]interface{}{
+			"memory": map[string]interface{}{
+				"alloc":        toMB(mem.Alloc),
+				"totalAlloc":   toMB(mem.TotalAlloc),
+				"sysAlloc":     toMB(mem.Sys),
+				"heapInuse":    toMB(mem.HeapInuse),
+				"heapIdle":     toMB(mem.HeapIdle),
+				"heapReleased": toMB(mem.HeapReleased),
+				"stackInuse":   toMB(mem.StackInuse),
+				"stackSys":     toMB(mem.StackSys),
+			},
+		},
+		)
+	}
+}
+
+type Size uint64
+
+const (
+	Byte Size = 1 << (10 * iota)
+	KB
+	MB
+)
+
+func toMB(b uint64) string {
+	return fmt.Sprintf("%.2f MB", megabytes(b))
+}
+func megabytes(b uint64) float64 {
+	return float64(b) / float64(MB)
 }

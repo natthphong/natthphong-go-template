@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go v1.49.17
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/gofiber/fiber/v2 v2.52.5
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.2
 	github.com/line/line-bot-sdk-go/v8 v8.9.0
@@ -19,6 +20,8 @@ require (
 	github.com/xdg-go/scram v1.1.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.27.0
+	google.golang.org/grpc v1.68.0
+	google.golang.org/protobuf v1.35.1
 
 )
 
@@ -31,7 +34,6 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
@@ -77,8 +79,6 @@ require (
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241113202542-65e8d215514f // indirect
-	google.golang.org/grpc v1.68.0 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
